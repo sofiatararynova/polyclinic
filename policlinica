@@ -1,0 +1,524 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict Bq2M0qOwlxjtxuVpF3rOQWCcYRCsmwfXCfzPC3bZ69PcxXbN34F0OABZyQDqFFC
+
+-- Dumped from database version 16.10
+-- Dumped by pg_dump version 16.10
+
+-- Started on 2025-11-17 19:55:36
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 16399)
+-- Name: myschema; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA myschema;
+
+
+ALTER SCHEMA myschema OWNER TO postgres;
+
+--
+-- TOC entry 4 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO pg_database_owner;
+
+--
+-- TOC entry 4843 (class 0 OID 0)
+-- Dependencies: 4
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 222 (class 1259 OID 16446)
+-- Name: administrators; Type: TABLE; Schema: myschema; Owner: postgres
+--
+
+CREATE TABLE myschema.administrators (
+    last_name character varying(100) NOT NULL,
+    first_name character varying(100) NOT NULL,
+    patronymic character varying(100),
+    administrator_id integer NOT NULL
+);
+
+
+ALTER TABLE myschema.administrators OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16451)
+-- Name: administrators_administrator_id_seq; Type: SEQUENCE; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.administrators ALTER COLUMN administrator_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME myschema.administrators_administrator_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 216 (class 1259 OID 16400)
+-- Name: doctors; Type: TABLE; Schema: myschema; Owner: postgres
+--
+
+CREATE TABLE myschema.doctors (
+    doctor_id integer NOT NULL,
+    last_name character varying(100) NOT NULL,
+    first_name character varying(100) NOT NULL,
+    patronymic character varying(100),
+    speciality character varying(150) NOT NULL,
+    experience integer
+);
+
+
+ALTER TABLE myschema.doctors OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16419)
+-- Name: doctors_doctor_id_seq; Type: SEQUENCE; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.doctors ALTER COLUMN doctor_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME myschema.doctors_doctor_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 217 (class 1259 OID 16405)
+-- Name: patients; Type: TABLE; Schema: myschema; Owner: postgres
+--
+
+CREATE TABLE myschema.patients (
+    patient_id integer NOT NULL,
+    last_name character varying(100) NOT NULL,
+    first_name character varying(100) NOT NULL,
+    patronymic character varying(100),
+    date_of_birth date NOT NULL,
+    address character varying(255)
+);
+
+
+ALTER TABLE myschema.patients OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16420)
+-- Name: patients_patient_id_seq; Type: SEQUENCE; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.patients ALTER COLUMN patient_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME myschema.patients_patient_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 225 (class 1259 OID 16471)
+-- Name: schedules; Type: TABLE; Schema: myschema; Owner: postgres
+--
+
+CREATE TABLE myschema.schedules (
+    schedule_id integer NOT NULL,
+    doctor_id integer NOT NULL,
+    patient_id integer,
+    schedule_date timestamp with time zone NOT NULL,
+    status character varying(50) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE myschema.schedules OWNER TO postgres;
+
+--
+-- TOC entry 224 (class 1259 OID 16470)
+-- Name: schedules_schedule_id_seq; Type: SEQUENCE; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.schedules ALTER COLUMN schedule_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME myschema.schedules_schedule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 227 (class 1259 OID 16490)
+-- Name: sick_leaves; Type: TABLE; Schema: myschema; Owner: postgres
+--
+
+CREATE TABLE myschema.sick_leaves (
+    sick_leave_id integer NOT NULL,
+    visit_id integer NOT NULL,
+    issue_date date NOT NULL,
+    content text,
+    status character varying(50)
+);
+
+
+ALTER TABLE myschema.sick_leaves OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 16489)
+-- Name: sick_leaves_sick_leave_id_seq; Type: SEQUENCE; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.sick_leaves ALTER COLUMN sick_leave_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME myschema.sick_leaves_sick_leave_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 16412)
+-- Name: visits; Type: TABLE; Schema: myschema; Owner: postgres
+--
+
+CREATE TABLE myschema.visits (
+    visit_id integer NOT NULL,
+    doctor_id integer NOT NULL,
+    patient_id integer NOT NULL,
+    visit_date timestamp with time zone NOT NULL,
+    diagnosis text NOT NULL
+);
+
+
+ALTER TABLE myschema.visits OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16422)
+-- Name: visits_visit_id_seq; Type: SEQUENCE; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.visits ALTER COLUMN visit_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME myschema.visits_visit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 4832 (class 0 OID 16446)
+-- Dependencies: 222
+-- Data for Name: administrators; Type: TABLE DATA; Schema: myschema; Owner: postgres
+--
+
+COPY myschema.administrators (last_name, first_name, patronymic, administrator_id) FROM stdin;
+Штольман	Анна	Николаевна	1
+Ветров	Сергей	Александрович	2
+Романова	Ольга	Владимировна	3
+\.
+
+
+--
+-- TOC entry 4826 (class 0 OID 16400)
+-- Dependencies: 216
+-- Data for Name: doctors; Type: TABLE DATA; Schema: myschema; Owner: postgres
+--
+
+COPY myschema.doctors (doctor_id, last_name, first_name, patronymic, speciality, experience) FROM stdin;
+1	Иванов	Алексей	Петрович	Терапевт	15
+2	Петрова	Мария	Сергеевна	Хирург	20
+3	Сидоров	Дмитрий	Иванович	Кардиолог	10
+4	Козлова	Ольга	Викторовна	Невролог	8
+5	Фёдоров	Сергей	Николаевич	Офтальмолог	12
+6	Тестов	Федор	\N	Психолог	1
+\.
+
+
+--
+-- TOC entry 4827 (class 0 OID 16405)
+-- Dependencies: 217
+-- Data for Name: patients; Type: TABLE DATA; Schema: myschema; Owner: postgres
+--
+
+COPY myschema.patients (patient_id, last_name, first_name, patronymic, date_of_birth, address) FROM stdin;
+1	Смирнов	Иван	Александрович	1985-03-15	ул. Ленина, д. 25, кв. 12
+2	Кузнецова	Елена	Владимировна	1990-07-22	ул. Пушкина, д. 10, кв. 45
+3	Попов	Андрей	Сергеевич	1978-11-30	ул. Гагарина, д. 5, кв. 8
+4	Васильева	Татьяна	Михайловна	1995-02-14	ул. Садовая, д. 17, кв. 23
+5	Николаев	Павел	Олегович	1982-09-05	ул. Центральная, д. 33, кв. 15
+\.
+
+
+--
+-- TOC entry 4835 (class 0 OID 16471)
+-- Dependencies: 225
+-- Data for Name: schedules; Type: TABLE DATA; Schema: myschema; Owner: postgres
+--
+
+COPY myschema.schedules (schedule_id, doctor_id, patient_id, schedule_date, status, created_at) FROM stdin;
+1	1	1	2024-02-01 09:00:00+03	booked	2025-11-06 21:42:14.370988+03
+2	1	2	2024-02-01 10:00:00+03	booked	2025-11-06 21:42:14.370988+03
+3	2	\N	2024-02-01 11:00:00+03	free	2025-11-06 21:42:14.370988+03
+4	3	3	2024-02-01 14:00:00+03	booked	2025-11-06 21:42:14.370988+03
+5	1	\N	2024-02-02 09:00:00+03	free	2025-11-06 21:42:14.370988+03
+\.
+
+
+--
+-- TOC entry 4837 (class 0 OID 16490)
+-- Dependencies: 227
+-- Data for Name: sick_leaves; Type: TABLE DATA; Schema: myschema; Owner: postgres
+--
+
+COPY myschema.sick_leaves (sick_leave_id, visit_id, issue_date, content, status) FROM stdin;
+2	2	2024-01-15	Гипертонический криз. Освобождение от работы на 10 дней.	active
+3	3	2024-01-16	Послеоперационный период. Освобождение на 14 дней.	active
+4	4	2024-01-16	Нарушение сердечного ритма. Освобождение на 5 дней.	closed
+1	1	2024-01-15	Острый бронхит. Освобождение от работы на 7 дней.	closed
+\.
+
+
+--
+-- TOC entry 4828 (class 0 OID 16412)
+-- Dependencies: 218
+-- Data for Name: visits; Type: TABLE DATA; Schema: myschema; Owner: postgres
+--
+
+COPY myschema.visits (visit_id, doctor_id, patient_id, visit_date, diagnosis) FROM stdin;
+1	1	1	2024-01-15 09:00:00+03	ОРВИ
+2	1	2	2024-01-15 10:30:00+03	Гипертоническая болезнь
+3	2	3	2024-01-16 11:00:00+03	Аппендицит
+4	3	4	2024-01-16 14:15:00+03	Аритмия
+5	4	5	2024-01-17 08:45:00+03	Мигрень
+6	1	3	2024-01-17 12:00:00+03	Бронхит
+7	2	1	2024-01-18 13:30:00+03	Консультация после операции
+9	1	1	2024-01-20 09:00:00+03	Первичный осмотр
+11	1	1	2024-01-20 10:00:00+03	Утренний прием
+12	1	1	2024-01-20 14:00:00+03	Вечерний прием
+\.
+
+
+--
+-- TOC entry 4844 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: administrators_administrator_id_seq; Type: SEQUENCE SET; Schema: myschema; Owner: postgres
+--
+
+SELECT pg_catalog.setval('myschema.administrators_administrator_id_seq', 3, true);
+
+
+--
+-- TOC entry 4845 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: doctors_doctor_id_seq; Type: SEQUENCE SET; Schema: myschema; Owner: postgres
+--
+
+SELECT pg_catalog.setval('myschema.doctors_doctor_id_seq', 6, true);
+
+
+--
+-- TOC entry 4846 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: patients_patient_id_seq; Type: SEQUENCE SET; Schema: myschema; Owner: postgres
+--
+
+SELECT pg_catalog.setval('myschema.patients_patient_id_seq', 6, true);
+
+
+--
+-- TOC entry 4847 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: schedules_schedule_id_seq; Type: SEQUENCE SET; Schema: myschema; Owner: postgres
+--
+
+SELECT pg_catalog.setval('myschema.schedules_schedule_id_seq', 5, true);
+
+
+--
+-- TOC entry 4848 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: sick_leaves_sick_leave_id_seq; Type: SEQUENCE SET; Schema: myschema; Owner: postgres
+--
+
+SELECT pg_catalog.setval('myschema.sick_leaves_sick_leave_id_seq', 4, true);
+
+
+--
+-- TOC entry 4849 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: visits_visit_id_seq; Type: SEQUENCE SET; Schema: myschema; Owner: postgres
+--
+
+SELECT pg_catalog.setval('myschema.visits_visit_id_seq', 12, true);
+
+
+--
+-- TOC entry 4671 (class 2606 OID 16456)
+-- Name: administrators administrators_pkey; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.administrators
+    ADD CONSTRAINT administrators_pkey PRIMARY KEY (administrator_id);
+
+
+--
+-- TOC entry 4661 (class 2606 OID 16421)
+-- Name: patients chk_patient_birthdate; Type: CHECK CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE myschema.patients
+    ADD CONSTRAINT chk_patient_birthdate CHECK ((date_of_birth <= CURRENT_DATE)) NOT VALID;
+
+
+--
+-- TOC entry 4663 (class 2606 OID 16404)
+-- Name: doctors doctors_pkey; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.doctors
+    ADD CONSTRAINT doctors_pkey PRIMARY KEY (doctor_id);
+
+
+--
+-- TOC entry 4665 (class 2606 OID 16411)
+-- Name: patients patients_pkey; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.patients
+    ADD CONSTRAINT patients_pkey PRIMARY KEY (patient_id);
+
+
+--
+-- TOC entry 4673 (class 2606 OID 16476)
+-- Name: schedules schedules_pkey; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.schedules
+    ADD CONSTRAINT schedules_pkey PRIMARY KEY (schedule_id);
+
+
+--
+-- TOC entry 4677 (class 2606 OID 16496)
+-- Name: sick_leaves sick_leaves_pkey; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.sick_leaves
+    ADD CONSTRAINT sick_leaves_pkey PRIMARY KEY (sick_leave_id);
+
+
+--
+-- TOC entry 4675 (class 2606 OID 16478)
+-- Name: schedules uniq_schedule_doctor_time; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.schedules
+    ADD CONSTRAINT uniq_schedule_doctor_time UNIQUE (doctor_id, schedule_date);
+
+
+--
+-- TOC entry 4667 (class 2606 OID 16440)
+-- Name: visits uniq_visit_doctor_patient_time; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.visits
+    ADD CONSTRAINT uniq_visit_doctor_patient_time UNIQUE (doctor_id, patient_id, visit_date);
+
+
+--
+-- TOC entry 4669 (class 2606 OID 16418)
+-- Name: visits visits_pkey; Type: CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.visits
+    ADD CONSTRAINT visits_pkey PRIMARY KEY (visit_id);
+
+
+--
+-- TOC entry 4680 (class 2606 OID 16479)
+-- Name: schedules fk_schedules_doctor; Type: FK CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.schedules
+    ADD CONSTRAINT fk_schedules_doctor FOREIGN KEY (doctor_id) REFERENCES myschema.doctors(doctor_id);
+
+
+--
+-- TOC entry 4681 (class 2606 OID 16484)
+-- Name: schedules fk_schedules_patient; Type: FK CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.schedules
+    ADD CONSTRAINT fk_schedules_patient FOREIGN KEY (patient_id) REFERENCES myschema.patients(patient_id);
+
+
+--
+-- TOC entry 4682 (class 2606 OID 16497)
+-- Name: sick_leaves fk_sick_leaves_visit; Type: FK CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.sick_leaves
+    ADD CONSTRAINT fk_sick_leaves_visit FOREIGN KEY (visit_id) REFERENCES myschema.visits(visit_id);
+
+
+--
+-- TOC entry 4678 (class 2606 OID 16423)
+-- Name: visits fk_visits_doctor; Type: FK CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.visits
+    ADD CONSTRAINT fk_visits_doctor FOREIGN KEY (doctor_id) REFERENCES myschema.doctors(doctor_id) NOT VALID;
+
+
+--
+-- TOC entry 4679 (class 2606 OID 16428)
+-- Name: visits fk_visits_patient; Type: FK CONSTRAINT; Schema: myschema; Owner: postgres
+--
+
+ALTER TABLE ONLY myschema.visits
+    ADD CONSTRAINT fk_visits_patient FOREIGN KEY (patient_id) REFERENCES myschema.patients(patient_id) NOT VALID;
+
+
+-- Completed on 2025-11-17 19:55:36
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict Bq2M0qOwlxjtxuVpF3rOQWCcYRCsmwfXCfzPC3bZ69PcxXbN34F0OABZyQDqFFC
+
